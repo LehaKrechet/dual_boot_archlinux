@@ -1,5 +1,7 @@
 # dual_boot_archlinux
 
+setfont /usr/share/kbd/consolefonts/ter-124n.psf.gz --ставим шрифт побольше
+
 1.Чтобы подтвердить наличие поддержки EFI, выполните команду:
 
 ls /sys/firmware/efi/efivars
@@ -24,7 +26,7 @@ station wlan0 scan
 
 station wlan0 get-networks --смотрим сети
 
-station wlan0 ИмяСети --подключаемся к сети
+station wlan0 connect ИмяСети --подключаемся к сети
 
 или если iwctl не работает
 
@@ -68,10 +70,12 @@ mount /dev/sda1 /mnt/efi -- монтирум загрузчик
 pacman -S base base-devel linux linux-headers linux-firmware nano networkmanager networkmanager-applet wireless-tools bluez bluez-utils git
 
 или
+
 pacstrap /mnt base linux linux-firmware
 
 
 genfstab /mnt >> /mnt/etc/fstab --создаем fstab
+
 
 7. Основная настройка
 
@@ -85,8 +89,6 @@ nano /etc/locale.gen --раскоментировать нужный язык
 
 locale-gen --генерирум локал файл
 
-echo "LANG=EN_US.UTF-8" > /etc/locale.conf
-
 echo linuxtechi > /etc/hostname --устанавливаем имя хоста
 
 echo "127.0.1.1 linuxtechi" >> /etc/hosts
@@ -94,7 +96,7 @@ echo "127.0.1.1 linuxtechi" >> /etc/hosts
 
 pacman -Sy netctl
 
-pacman -Sy dhcpcd wpa-supplicant ifplugd  --ставим сетевой месенджер
+pacman -Sy dhcpcd ifplugd  --ставим сетевой месенджер
 
 
 useradd -G wheel -m linuxtechi --добавляем пользователя в группу wheel
@@ -124,13 +126,22 @@ reboot
 
 
 Исправление записи в меню загрузки Windows (если она не отображается):
+
 I. Загрузите Arch Linux.
-II. Определите раздел Windows:lsblk
+
+II. Определите раздел Windows: lsblk
+
 III. Монтирование раздела Windows:
+
 монтировать /dev/ < имя_раздела_windows > /mnt/windows
+
 IV. Редактировать /etc/default/grub:
 Отредактируйте файл с помощью nano.
+
 Раскомментируйте строку:GRUB_DISABLE_OS_PROBER
+
 V. Регенерация конфигурации Grub:
+
 grub-mkconfig -o /boot/grub/grub.cfg
+
 6. Перезагрузите систему.
