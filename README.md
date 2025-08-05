@@ -15,20 +15,27 @@ rfkill unblock wifi --если интерфейс есть но выключен
 ip link set wlan0 up  --Влючам беспроводной интерфейс
 
 iwctl --утилита для подключения
+
 Далее команды внутри утилки
+
 device list --смотрим сетевую карту
+
 station wlan0 scan
+
 station wlan0 get-networks --смотрим сети
+
 station wlan0 ИмяСети --подключаемся к сети
 
 или если iwctl не работает
 
 nmcli device wifi list --смотрим список сетей
+
 nmcli device wifi connect access_point_name password your_password --подключаемся к сети
 
 4. Обновляем время и дату
 
 timedatectl set-ntp true
+
 timedatectl status
 
 5. Создание и форматирование раздела
@@ -45,18 +52,24 @@ cfdisk /dev/Мой-диск
 вместо sda6 свой диск
 
 mkfs.ext4 /dev/sda5 --форматируем корневой раздела
+
 mkswap /dev/sda6 --форматируем раздел подкачки
+
 swapon /dev/sda6 --включаем раздел swap
 
 mount /dev/sda5 /mnt  --монтируем раздел
+
 mkdir /mnt/efi --директоия для загрузчика
+
 mount /dev/sda1 /mnt/efi -- монтирум загрузчик
 
 6. Установка системы
 
 pacman -S base base-devel linux linux-headers linux-firmware nano networkmanager networkmanager-applet wireless-tools bluez bluez-utils git
+
 или
 pacstrap /mnt base linux linux-firmware
+
 
 genfstab /mnt >> /mnt/etc/fstab --создаем fstab
 
@@ -65,28 +78,44 @@ genfstab /mnt >> /mnt/etc/fstab --создаем fstab
 arch-chroot /mnt --запускаемя в arch
 
 ln -sf /usr/share/zoneinfo/US/Pacific /etc/localtime --устанавливаем временную зону
+
 hwclock --systohc --синхронизируем часы
+
 nano /etc/locale.gen --раскоментировать нужный язык
+
 locale-gen --генерирум локал файл
+
 echo "LANG=EN_US.UTF-8" > /etc/locale.conf
 
 echo linuxtechi > /etc/hostname --устанавливаем имя хоста
+
 echo "127.0.1.1 linuxtechi" >> /etc/hosts
 
+
 pacman -Sy netctl
+
 pacman -Sy dhcpcd wpa-supplicant ifplugd  --ставим сетевой месенджер
 
+
 useradd -G wheel -m linuxtechi --добавляем пользователя в группу wheel
+
 passwd linuxtechi --устанавливаем пароль пользователя
+
 passwd --ставим пароль рута
+
 /etc/sudoers --тама wheel ALL=(ALL) ALL что-бы дать рут группе wheel
+
 
 8. Ставим загрузчик
 
 pacman -S grub efibootmgr
+
 pacman -S os-prober
+
 grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=GRUB
+
 grub-mkconfig -o /boot/grub/grub.cfg
+
 
 systemctl enable networkmanager bluetooth --включаем интернет и блютуз
 
